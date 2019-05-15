@@ -1,4 +1,4 @@
-package cn.sexycode.util.core;
+package cn.sexycode.util.core.exception;
 
 /**
  * Indicates and an error with the serialization or de-serialization of

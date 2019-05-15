@@ -1,4 +1,6 @@
-package cn.sexycode.util.core;
+package cn.sexycode.util.core.collection;
+
+import cn.sexycode.util.core.exception.SerialException;
 
 import java.io.Serializable;
 import java.lang.reflect.Array;

@@ -1,4 +1,4 @@
-package cn.sexycode.util.core;
+package cn.sexycode.util.core.collection;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

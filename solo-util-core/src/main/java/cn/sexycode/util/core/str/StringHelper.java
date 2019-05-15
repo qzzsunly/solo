@@ -1,15 +1,21 @@
-package cn.sexycode.util.core;
+package cn.sexycode.util.core.str;
 
+import cn.sexycode.util.core.collection.ArrayHelper;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author qinzaizhen
  */
 public final class StringHelper {
+    private static Pattern UNDERLINE_TO_CAMELHUMP_PATTERN = Pattern.compile("_[a-z]");
 
     private static final int ALIAS_TRUNCATE_LENGTH = 10;
+
     public static final String WHITESPACE = " \n\r\f\t";
+
     public static final String[] EMPTY_STRINGS = new String[0];
 
     private StringHelper() { /* static methods only - hide constructor */
@@ -35,18 +41,14 @@ public final class StringHelper {
         // If strings[0] is null, then its length is defined as 4, since that's the
         // length of "null".
         final int firstStringLength = strings[0] != null ? strings[0].length() : 4;
-        StringBuilder buf = new StringBuilder(length * firstStringLength)
-                .append(strings[0]);
+        StringBuilder buf = new StringBuilder(length * firstStringLength).append(strings[0]);
         for (int i = 1; i < length; i++) {
             buf.append(seperator).append(strings[i]);
         }
         return buf.toString();
     }
 
-    public static String joinWithQualifierAndSuffix(
-            String[] values,
-            String qualifier,
-            String suffix,
+    public static String joinWithQualifierAndSuffix(String[] values, String qualifier, String suffix,
             String deliminator) {
         int length = values.length;
         if (length == 0) {
@@ -106,7 +108,6 @@ public final class StringHelper {
         return new String(buffer);
     }
 
-
     public static String replace(String template, String placeholder, String replacement) {
         return replace(template, placeholder, replacement, false);
     }
@@ -123,11 +124,7 @@ public final class StringHelper {
         return replace(template, placeholder, replacement, wholeWords, false);
     }
 
-    public static String replace(
-            String template,
-            String placeholder,
-            String replacement,
-            boolean wholeWords,
+    public static String replace(String template, String placeholder, String replacement, boolean wholeWords,
             boolean encloseInParensIfNecessary) {
         if (template == null) {
             return null;
@@ -138,29 +135,15 @@ public final class StringHelper {
         } else {
             String beforePlaceholder = template.substring(0, loc);
             String afterPlaceholder = template.substring(loc + placeholder.length());
-            return replace(
-                    beforePlaceholder,
-                    afterPlaceholder,
-                    placeholder,
-                    replacement,
-                    wholeWords,
-                    encloseInParensIfNecessary
-            );
+            return replace(beforePlaceholder, afterPlaceholder, placeholder, replacement, wholeWords,
+                    encloseInParensIfNecessary);
         }
     }
 
-
-    public static String replace(
-            String beforePlaceholder,
-            String afterPlaceholder,
-            String placeholder,
-            String replacement,
-            boolean wholeWords,
-            boolean encloseInParensIfNecessary) {
-        final boolean actuallyReplace =
-                !wholeWords
-                        || afterPlaceholder.length() == 0
-                        || !Character.isJavaIdentifierPart(afterPlaceholder.charAt(0));
+    public static String replace(String beforePlaceholder, String afterPlaceholder, String placeholder,
+            String replacement, boolean wholeWords, boolean encloseInParensIfNecessary) {
+        final boolean actuallyReplace = !wholeWords || afterPlaceholder.length() == 0 || !Character
+                .isJavaIdentifierPart(afterPlaceholder.charAt(0));
         // We only need to check the left param to determine if the placeholder is already
         // enclosed in parentheses (HHH-10383)
         // Examples:
@@ -173,11 +156,9 @@ public final class StringHelper {
         // Examples:
         // " ... Order By FIELD(id,?1)",  after expand parameters, the sql is "... Order By FIELD(id,?,?,?)"
         boolean encloseInParens =
-                actuallyReplace
-                        && encloseInParensIfNecessary
-                        && !(getLastNonWhitespaceCharacter(beforePlaceholder) == '(') &&
-                        !(getLastNonWhitespaceCharacter(beforePlaceholder) == ',' && getFirstNonWhitespaceCharacter(
-                                afterPlaceholder) == ')');
+                actuallyReplace && encloseInParensIfNecessary && !(getLastNonWhitespaceCharacter(beforePlaceholder)
+                        == '(') && !(getLastNonWhitespaceCharacter(beforePlaceholder) == ','
+                        && getFirstNonWhitespaceCharacter(afterPlaceholder) == ')');
         StringBuilder buf = new StringBuilder(beforePlaceholder);
         if (encloseInParens) {
             buf.append('(');
@@ -186,15 +167,7 @@ public final class StringHelper {
         if (encloseInParens) {
             buf.append(')');
         }
-        buf.append(
-                replace(
-                        afterPlaceholder,
-                        placeholder,
-                        replacement,
-                        wholeWords,
-                        encloseInParensIfNecessary
-                )
-        );
+        buf.append(replace(afterPlaceholder, placeholder, replacement, wholeWords, encloseInParensIfNecessary));
         return buf.toString();
     }
 
@@ -224,7 +197,7 @@ public final class StringHelper {
 
     public static String replaceOnce(String template, String placeholder, String replacement) {
         if (template == null) {
-            return null;  // returnign null!
+            return null;
         }
         int loc = template.indexOf(placeholder);
         if (loc < 0) {
@@ -233,7 +206,6 @@ public final class StringHelper {
             return template.substring(0, loc) + replacement + template.substring(loc + placeholder.length());
         }
     }
-
 
     public static String[] split(String separators, String list) {
         return split(separators, list, false);
@@ -285,10 +257,7 @@ public final class StringHelper {
         if (breakPoint < 0) {
             return name;
         }
-        return collapseQualifier(
-                name.substring(0, breakPoint),
-                true
-        ) + name.substring(breakPoint); // includes last '.'
+        return collapseQualifier(name.substring(0, breakPoint), true) + name.substring(breakPoint); // includes last '.'
     }
 
     /**
@@ -384,7 +353,7 @@ public final class StringHelper {
     }
 
     public static String[] multiply(String string, Iterator placeholders, Iterator replacements) {
-        String[] result = new String[]{string};
+        String[] result = new String[] { string };
         while (placeholders.hasNext()) {
             result = multiply(result, (String) placeholders.next(), (String[]) replacements.next());
         }
@@ -554,9 +523,7 @@ public final class StringHelper {
      * @return an alias of the form <samp>foo1_</samp>
      */
     public static String generateAlias(String description, int unique) {
-        return generateAliasRoot(description)
-                + Integer.toString(unique)
-                + '_';
+        return generateAliasRoot(description) + Integer.toString(unique) + '_';
     }
 
     /**
@@ -568,8 +535,7 @@ public final class StringHelper {
      * @return The generated root alias.
      */
     private static String generateAliasRoot(String description) {
-        String result = truncate(unqualifyEntityName(description), ALIAS_TRUNCATE_LENGTH)
-                .toLowerCase(Locale.ROOT)
+        String result = truncate(unqualifyEntityName(description), ALIAS_TRUNCATE_LENGTH).toLowerCase(Locale.ROOT)
                 .replace('/', '_') // entityNames may now include slashes for the representations
                 .replace('$', '_'); //classname may be an inner class
         result = cleanAlias(result);
@@ -628,8 +594,7 @@ public final class StringHelper {
      * @return True if the given string starts and ends with '`'; false otherwise.
      */
     public static boolean isQuoted(String name) {
-        return name != null && name.length() != 0
-                && ((name.charAt(0) == '`' && name.charAt(name.length() - 1) == '`')
+        return name != null && name.length() != 0 && ((name.charAt(0) == '`' && name.charAt(name.length() - 1) == '`')
                 || (name.charAt(0) == '"' && name.charAt(name.length() - 1) == '"'));
     }
 
@@ -662,7 +627,6 @@ public final class StringHelper {
         return isQuoted(name) ? name.substring(1, name.length() - 1) : name;
     }
 
-
     public static final String BATCH_ID_PLACEHOLDER = "$$BATCH_ID_PLACEHOLDER$$";
 
     /**
@@ -673,7 +637,7 @@ public final class StringHelper {
      * @return String[]
      */
     public static String[] toArrayElement(String s) {
-        return (s == null || s.length() == 0) ? new String[0] : new String[]{s};
+        return (s == null || s.length() == 0) ? new String[0] : new String[] { s };
     }
 
     public static String nullIfEmpty(String value) {
@@ -707,4 +671,86 @@ public final class StringHelper {
     public interface Renderer<T> {
         String render(T value);
     }
+
+    /**
+     * 根据指定的样式进行转换
+     *
+     * @param str
+     * @param style
+     * @return
+     */
+    public static String convertByStyle(String str, Style style) {
+        switch (style) {
+            case camelhump:
+                return camelhumpToUnderline(str);
+            case uppercase:
+                return str.toUpperCase();
+            case lowercase:
+                return str.toLowerCase();
+            case camelhumpAndLowercase:
+                return camelhumpToUnderline(str).toLowerCase();
+            case camelhumpAndUppercase:
+                return camelhumpToUnderline(str).toUpperCase();
+            case normal:
+            default:
+                return str;
+        }
+    }
+
+    /**
+     * 将驼峰风格替换为下划线风格
+     */
+    public static String camelhumpToUnderline(String str) {
+        final int size;
+        final char[] chars;
+        final StringBuilder sb = new StringBuilder((size = (chars = str.toCharArray()).length) * 3 / 2 + 1);
+        char c;
+        for (int i = 0; i < size; i++) {
+            c = chars[i];
+            if (isUppercaseAlpha(c)) {
+                sb.append('_').append(toLowerAscii(c));
+            } else {
+                sb.append(c);
+            }
+        }
+        return sb.charAt(0) == '_' ? sb.substring(1) : sb.toString();
+    }
+
+    /**
+     * 将下划线风格替换为驼峰风格
+     */
+    public static String underlineToCamelhump(String str) {
+        Matcher matcher = UNDERLINE_TO_CAMELHUMP_PATTERN.matcher(str);
+        StringBuilder builder = new StringBuilder(str);
+        for (int i = 0; matcher.find(); i++) {
+            builder.replace(matcher.start() - i, matcher.end() - i, matcher.group().substring(1).toUpperCase());
+        }
+        if (Character.isUpperCase(builder.charAt(0))) {
+            builder.replace(0, 1, String.valueOf(Character.toLowerCase(builder.charAt(0))));
+        }
+        return builder.toString();
+    }
+
+    public static boolean isUppercaseAlpha(char c) {
+        return (c >= 'A') && (c <= 'Z');
+    }
+
+    public static boolean isLowercaseAlpha(char c) {
+        return (c >= 'a') && (c <= 'z');
+    }
+
+    public static char toUpperAscii(char c) {
+        if (isLowercaseAlpha(c)) {
+            c -= (char) 0x20;
+        }
+        return c;
+    }
+
+    public static char toLowerAscii(char c) {
+        if (isUppercaseAlpha(c)) {
+            c += (char) 0x20;
+        }
+        return c;
+    }
+
 }
