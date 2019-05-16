@@ -8,7 +8,6 @@ import java.util.Arrays;
  */
 public final class EqualsHelper {
 
-    @SuppressWarnings("SimplifiableIfStatement")
     public static boolean equals(final Object x, final Object y) {
         if (x == y) {
             return true;

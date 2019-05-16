@@ -1,6 +1,6 @@
 package cn.sexycode.util.core.collection;
 
-import cn.sexycode.util.core.exception.SerialException;
+import cn.sexycode.util.core.exception.SerializationException;
 
 import java.io.Serializable;
 import java.lang.reflect.Array;
@@ -385,7 +385,7 @@ public final class ArrayHelper {
             }
         }
         if (i != nonNullCount) {
-            throw new SerialException("Number of non-null elements varied between iterations");
+            throw new SerializationException("Number of non-null elements varied between iterations");
         }
         return result;
     }
