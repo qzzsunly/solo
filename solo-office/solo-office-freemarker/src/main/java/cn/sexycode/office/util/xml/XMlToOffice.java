@@ -1,5 +1,6 @@
 package cn.sexycode.office.util.xml;
 
+import cn.sexycode.office.template.ExcelTemplate;
 import cn.sexycode.office.template.WordTemplate;
 import cn.sexycode.util.core.file.ZipUtils;
 import freemarker.template.Template;
@@ -10,9 +11,7 @@ import java.util.Map;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-public class XMlToDocx {
-
-    private static String OS = System.getProperty("os.name").toLowerCase();
+public class XMlToOffice {
 
     /**
      * 根据数据生成文本
@@ -27,9 +26,7 @@ public class XMlToDocx {
         FileOutputStream fos = new FileOutputStream(docFile);
         Writer out = new BufferedWriter(new OutputStreamWriter(fos), 10240);
         template.process(dataMap, out);
-        if (out != null) {
-            out.close();
-        }
+        out.close();
     }
 
     /**
@@ -41,24 +38,16 @@ public class XMlToDocx {
      * @throws Exception
      */
     public static void makeWord(Map<String, Object> dataMap, Template template, String outDocFilePath,
-            String sourceDocFilePath) throws Exception {
-        /** 初始化配置文件 **/
-        //        Configuration configuration = new Configuration(Configuration.VERSION_2_3_0);
-        //        String fileDirectory = ftlPath;
-        /** 加载文件 **/
-        //        configuration.setDirectoryForTemplateLoading(new File(fileDirectory));
+            String sourceDocFilePath) {
 
-        /** 加载模板 **/
-        //        Template template = configuration.getTemplate(WordTemplate.DOC_TEXT);
-        /** 指定输出word文件的路径 **/
-        String outFilePath = outDocFilePath + ".xml";
-        toText(dataMap, outFilePath, template);
+        try {
+            String outFilePath = outDocFilePath + ".xml";
+            toText(dataMap, outFilePath, template);
 
      /*   template = configuration.getTemplate(WordTemplate.IMG_NAME);
         outFilePath = outDocFilePath + ".xml.rels";
         toText(dataMap, outFilePath, template);*/
 
-        try {
             //该zip文件是docx重命名后的压缩文件
             ZipInputStream zipInputStream = ZipUtils
                     .wrapZipInputStream(new FileInputStream(new File(sourceDocFilePath)));
@@ -69,6 +58,44 @@ public class XMlToDocx {
 
             Map<String, InputStream> map = new HashMap<>(1);
             map.put(WordTemplate.DOC_TEXT, new FileInputStream(fileText));
+            ZipUtils.replaceItem(map, zipInputStream, zipOutputStream);
+            if (fileText.exists()) {
+                fileText.delete();
+            }
+            if (fileImg.exists()) {
+                fileImg.delete();
+            }
+        } catch (Exception e) {
+            System.out.println(e.toString());
+        }
+    }
+
+    /**
+     * 生成word docx
+     *
+     * @param dataMap        数据
+     * @param ftlPath        ftl存放的目录（模板）
+     * @param outDocFilePath 生成的document.xml和document.xml.rels对应的目录名称
+     * @throws Exception
+     */
+    public static void makeExcel(Map<String, Object> dataMap, Template template, String outDocFilePath, String sourceDocFilePath) throws Exception {
+
+        String outFilePath = outDocFilePath + ".xml";
+        toText(dataMap, outFilePath, template);
+
+     /*   template = configuration.getTemplate(WordTemplate.IMG_NAME);
+        outFilePath = outDocFilePath + ".xml.rels";
+        toText(dataMap, outFilePath, template);*/
+
+        try {
+            //该zip文件是docx重命名后的压缩文件
+            ZipInputStream zipInputStream = ZipUtils.wrapZipInputStream(new FileInputStream(new File(sourceDocFilePath)));
+            ZipOutputStream zipOutputStream = ZipUtils.wrapZipOutputStream(new FileOutputStream(new File(outDocFilePath)));
+            File fileText = new File(outDocFilePath + ".xml");
+            File fileImg = new File(outDocFilePath + ".xml.rels");
+
+            Map<String, InputStream> map = new HashMap<>(1);
+            map.put(ExcelTemplate.SHARED_STRINGS, new FileInputStream(fileText));
             ZipUtils.replaceItem(map, zipInputStream, zipOutputStream);
             if (fileText.exists()) {
                 fileText.delete();

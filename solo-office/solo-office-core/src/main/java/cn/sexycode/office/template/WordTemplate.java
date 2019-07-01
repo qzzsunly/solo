@@ -1,7 +1,10 @@
 package cn.sexycode.office.template;
 
-import java.util.Map;
-
+/**
+ * word
+ *
+ * @author qinzaizhen
+ */
 public interface WordTemplate extends Template {
     /**
      * 要替换的document.xml的位置
@@ -18,5 +21,4 @@ public interface WordTemplate extends Template {
 
     String WORD_SUFFIX = ".docx";
 
-    void toDocx(String outFile, Map<String, Object> dataModel);
 }

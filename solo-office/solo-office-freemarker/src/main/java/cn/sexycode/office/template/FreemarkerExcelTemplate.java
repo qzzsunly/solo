@@ -8,13 +8,13 @@ import org.slf4j.LoggerFactory;
 import java.util.Map;
 
 /**
- * word模板
+ * excel 模板
  *
  * @author qinzaizhen
  */
-public class FreemarkerWordTemplate extends AbstractTemplate implements WordTemplate {
+public class FreemarkerExcelTemplate extends AbstractTemplate implements ExcelTemplate {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(FreemarkerWordTemplate.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FreemarkerExcelTemplate.class);
 
     private String path;
 
@@ -25,7 +25,7 @@ public class FreemarkerWordTemplate extends AbstractTemplate implements WordTemp
      *
      * @param path
      */
-    public FreemarkerWordTemplate(String path) {
+    public FreemarkerExcelTemplate(String path) {
         this.path = path;
     }
 
@@ -34,10 +34,14 @@ public class FreemarkerWordTemplate extends AbstractTemplate implements WordTemp
 
         try {
             Template template = prepare(path);
-            XMlToOffice.makeWord(dataModel, template, outFile, path);
+            XMlToOffice.makeExcel(dataModel, template, outFile, path);
         } catch (Exception e) {
             LOGGER.error("转换异常", e);
         }
     }
 
+    @Override
+    protected String getXmlPath() {
+        return ExcelTemplate.SHARED_STRINGS;
+    }
 }

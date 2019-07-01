@@ -1,13 +1,13 @@
 package cn.sexycode.office;
 
 public class Config {
-    private String workDir = System.getProperty("temp.dir");
+    private static String workDir = System.getProperty("java.io.tmpdir") + "solof";
 
-    public String getWorkDir() {
+    public static String getWorkDir() {
         return workDir;
     }
 
-    public void setWorkDir(String workDir) {
-        this.workDir = workDir;
+    public static void setWorkDir(String workDir) {
+        Config.workDir = workDir;
     }
 }

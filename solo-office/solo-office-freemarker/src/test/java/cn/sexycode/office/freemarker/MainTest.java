@@ -1,7 +1,6 @@
 package cn.sexycode.office.freemarker;
 
 import cn.sexycode.office.template.TemplateUtil;
-import cn.sexycode.office.template.WordTemplate;
 import cn.sexycode.util.core.file.ZipUtils;
 import cn.sexycode.util.core.io.IOUtils;
 import cn.sexycode.util.core.str.StringHelper;
@@ -39,7 +38,7 @@ public class MainTest {
         String template = new String(IOUtils.toByteArray(new FileInputStream("e:/template/demot/word/document.xml")));
         String replace = StringHelper.replace(template, "&lt;", "<").replace("&gt;", ">");
         new FileOutputStream("e:/template/demot/word/document.xml").write(replace.getBytes());
-        //        XMlToDocx.makeWord(dataModel, "e:/template/demot/word", "e:/template/demo", "e:/template/demot.docx");
+        //        XMlToOffice.makeWord(dataModel, "e:/template/demot/word", "e:/template/demo", "e:/template/demot.docx");
 
     }
 
@@ -53,6 +52,8 @@ public class MainTest {
         dataModel.put("creditCode", 11111);
         dataModel.put("bankContactPhone", 11111);
         dataModel.put("bankAddress", 11111);
-        ((WordTemplate) TemplateUtil.getTemplate("e:/template/demot.docx")).toDocx("e:/template/demo.docx", dataModel);
+        (TemplateUtil.getTemplate("e:/template/demot.docx")).process("e:/template/demo.docx", dataModel);
+        (TemplateUtil.getTemplate("e:/template/exchangeInfo1.xlsx"))
+                .process("e:/template/exchangeInfo.xlsx", dataModel);
     }
 }

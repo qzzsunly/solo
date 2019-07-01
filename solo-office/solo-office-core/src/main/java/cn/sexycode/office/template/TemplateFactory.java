@@ -31,4 +31,7 @@ public interface TemplateFactory {
      * @return Template
      */
     Template findTemplate(String templateName);
+
+    void initConfig();
+
 }
