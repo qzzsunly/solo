@@ -8,6 +8,9 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * @author qzz
+ */
 public class FreemarkerConfiguration {
     private static final Logger LOGGER = LoggerFactory.getLogger(FreemarkerConfiguration.class);
 

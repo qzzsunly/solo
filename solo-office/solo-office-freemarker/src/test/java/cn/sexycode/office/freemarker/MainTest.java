@@ -38,7 +38,7 @@ public class MainTest {
         String template = new String(IOUtils.toByteArray(new FileInputStream("e:/template/demot/word/document.xml")));
         String replace = StringHelper.replace(template, "&lt;", "<").replace("&gt;", ">");
         new FileOutputStream("e:/template/demot/word/document.xml").write(replace.getBytes());
-        //        XMlToOffice.makeWord(dataModel, "e:/template/demot/word", "e:/template/demo", "e:/template/demot.docx");
+        //        XmlToOffice.makeWord(dataModel, "e:/template/demot/word", "e:/template/demo", "e:/template/demot.docx");
 
     }
 

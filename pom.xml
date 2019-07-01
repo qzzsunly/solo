@@ -10,7 +10,7 @@
         <version>1.1</version>
     </parent>
     <artifactId>solo-util</artifactId>
-    <version>1.1</version>
+    <version>1.2</version>
     <packaging>pom</packaging>
     <name>solo-util</name>
     <url>http://solo-util.sexycode.cn</url>

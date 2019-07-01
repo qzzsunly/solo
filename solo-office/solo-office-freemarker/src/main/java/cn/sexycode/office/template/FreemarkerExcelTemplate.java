@@ -1,6 +1,6 @@
 package cn.sexycode.office.template;
 
-import cn.sexycode.office.util.xml.XMlToOffice;
+import cn.sexycode.office.util.xml.XmlToOffice;
 import freemarker.template.Template;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +34,7 @@ public class FreemarkerExcelTemplate extends AbstractTemplate implements ExcelTe
 
         try {
             Template template = prepare(path);
-            XMlToOffice.makeExcel(dataModel, template, outFile, path);
+            XmlToOffice.makeExcel(dataModel, template, outFile, path);
         } catch (Exception e) {
             LOGGER.error("转换异常", e);
         }
