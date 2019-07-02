@@ -1,5 +1,7 @@
 package cn.sexycode.office.freemarker;
 
+import cn.sexycode.office.template.FreemarkerTemplateFactory;
+import cn.sexycode.office.template.TemplateFactory;
 import cn.sexycode.office.template.TemplateUtil;
 import cn.sexycode.util.core.file.ZipUtils;
 import cn.sexycode.util.core.io.IOUtils;
@@ -55,5 +57,21 @@ public class MainTest {
         (TemplateUtil.getTemplate("e:/template/demot.docx")).process("e:/template/demo.docx", dataModel);
         (TemplateUtil.getTemplate("e:/template/exchangeInfo1.xlsx"))
                 .process("e:/template/exchangeInfo.xlsx", dataModel);
+    }
+
+    @Test
+    public void testTemplateFactory() {
+        HashMap<String, Object> dataModel = new HashMap<>();
+        dataModel.put("city", 11111);
+        dataModel.put("text", 11111);
+        dataModel.put("lists", new ArrayList<>(Arrays.asList("11111", "22222")));
+        dataModel.put("bankName", 11111);
+        dataModel.put("creditCode", 11111);
+        dataModel.put("bankContactPhone", 11111);
+        dataModel.put("bankAddress", 11111);
+        TemplateFactory factory = new FreemarkerTemplateFactory();
+        factory.findTemplate("e:/template/demot.docx").process("e:/template/demo.docx", dataModel);
+        /*(TemplateUtil.getTemplate("e:/template/exchangeInfo1.xlsx"))
+                .process("e:/template/exchangeInfo.xlsx", dataModel);*/
     }
 }

@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * @author qinzaizhen
  */
-public class FreemarkerTemplateFactory implements TemplateFactory {
+public class FreemarkerTemplateFactory extends AbstractTemplateFactory {
     @Override
     public Template findTemplate(String templateName) {
         if (WordTemplate.WORD_SUFFIX.equalsIgnoreCase(FileUtils.toSuffix(templateName))) {
@@ -19,7 +19,7 @@ public class FreemarkerTemplateFactory implements TemplateFactory {
         if (ExcelTemplate.EXCEL_SUFFIX.equalsIgnoreCase(FileUtils.toSuffix(templateName))) {
             return new FreemarkerExcelTemplate(templateName);
         }
-        throw new UnsupportedOperationException("无法找到[" + templateName + "]对应的模板");
+        throw new TemplateNotFoundException("无法找到[" + templateName + "]对应的模板");
     }
 
     @Override

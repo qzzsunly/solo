@@ -1,8 +1,8 @@
 package cn.sexycode.util.core.object;
 
 import cn.sexycode.util.core.exception.AssertionFailure;
+import cn.sexycode.util.core.exception.PropertyNotFoundException;
 import cn.sexycode.util.core.exception.ReflectException;
-import com.sun.javafx.fxml.PropertyNotFoundException;
 
 import java.beans.Introspector;
 import java.lang.reflect.*;
