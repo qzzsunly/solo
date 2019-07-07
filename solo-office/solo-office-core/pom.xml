@@ -26,6 +26,10 @@
             <artifactId>poi-ooxml</artifactId>
             <version>4.1.0</version>
         </dependency>
+        <dependency>
+            <groupId>cn.sexycode</groupId>
+            <artifactId>solo-util-core</artifactId>
+        </dependency>
 
 
     </dependencies>
