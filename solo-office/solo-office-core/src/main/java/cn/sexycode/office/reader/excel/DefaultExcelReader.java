@@ -1,17 +1,20 @@
 package cn.sexycode.office.reader.excel;
 
-import cn.sexycode.office.reader.Model;
+import cn.sexycode.office.Config;
 import cn.sexycode.office.reader.ParseException;
 import org.apache.poi.ooxml.util.SAXHelper;
 import org.apache.poi.openxml4j.opc.OPCPackage;
+import org.apache.poi.ss.util.CellAddress;
+import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.eventusermodel.XSSFReader;
+import org.apache.poi.xssf.eventusermodel.XSSFSheetXMLHandler;
 import org.apache.poi.xssf.model.SharedStringsTable;
+import org.apache.poi.xssf.usermodel.XSSFComment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.*;
-import org.xml.sax.helpers.DefaultHandler;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
 
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -62,14 +65,16 @@ public class DefaultExcelReader implements ExcelReader {
     }
 
     @Override
-    public void read(InputStream in, Model model) throws ParseException {
+    public void read(InputStream in) throws ParseException {
         try {
             OPCPackage pkg = OPCPackage.open(in);
             XSSFReader r = new XSSFReader(pkg);
             SharedStringsTable sst = r.getSharedStringsTable();
 
-            XMLReader parser = fetchSheetParser(sst);
-
+            XMLReader parser = SAXHelper.newXMLReader();
+            XSSFSheetXMLHandler handler = new XSSFSheetXMLHandler(r.getStylesTable(), sst, new InnerSheetHandler(),
+                    false);
+            parser.setContentHandler(handler);
             Iterator<InputStream> sheets = r.getSheetsData();
             while (sheets.hasNext()) {
                 System.out.println("Processing new sheet:\n");
@@ -86,65 +91,66 @@ public class DefaultExcelReader implements ExcelReader {
         }
     }
 
-    private XMLReader fetchSheetParser(SharedStringsTable sst) throws SAXException, ParserConfigurationException {
-        XMLReader parser = SAXHelper.newXMLReader();
-        ContentHandler handler = new InnerSheetHandler(sst);
-        parser.setContentHandler(handler);
-        return parser;
-    }
+    private class InnerSheetHandler implements XSSFSheetXMLHandler.SheetContentsHandler {
+        private List<Object> rowData;
 
-    /**
-     * See org.xml.sax.helpers.DefaultHandler javadocs
-     */
-    private class InnerSheetHandler extends DefaultHandler {
-        private SharedStringsTable sst;
+        private int currentRow = -1;
 
-        private String lastContents;
+        private int currentCol = -1;
 
-        private boolean nextIsString;
-
-        private InnerSheetHandler(SharedStringsTable sst) {
-            this.sst = sst;
+        @Override
+        public void startRow(int rowNum) {
+            currentRow = rowNum;
+            currentCol = -1;
+            rowData = new ArrayList<>();
+            //            System.out.println("startRow: " + rowNum);
         }
 
         @Override
-        public void startElement(String uri, String localName, String name, Attributes attributes) throws SAXException {
-            // c => cell
-            if (name.equals("c")) {
-                // Print the cell reference
-                System.out.print(attributes.getValue("r") + " - ");
-                // Figure out if the value is an index in the SST
-                String cellType = attributes.getValue("t");
-                if (cellType != null && cellType.equals("s")) {
-                    nextIsString = true;
-                } else {
-                    nextIsString = false;
+        public void endRow(int rowNum) {
+            //            System.out.println("endRow: " + rowNum);
+            if (!Config.cellHandlerSkipRowData) {
+                getRowHandlers().forEach(rowHandler -> rowHandler.read(String.valueOf(rowNum + 1), rowNum, rowData));
+                for (int i = 0; i < rowData.size(); i++) {
+                    Object data = rowData.get(i);
+                    String labelX = String.valueOf(currentRow + 1);
+                    String labelY = CellReference.convertNumToColString(i);
+                    int col = i;
+                    getCellHandlers()
+                            .forEach(cellHandler -> cellHandler.read(labelX, labelY, currentRow, col, rowData, data));
                 }
-            }
-            // Clear contents cache
-            lastContents = "";
-        }
 
-        @Override
-        public void endElement(String uri, String localName, String name) throws SAXException {
-            // Process the last contents as required.
-            // Do now, as characters() may be called more than once
-            if (nextIsString) {
-                int idx = Integer.parseInt(lastContents);
-                lastContents = sst.getItemAt(idx).getString();
-                nextIsString = false;
-            }
-
-            // v => contents of a cell
-            // Output after we've seen the string contents
-            if (name.equals("v")) {
-                System.out.println(lastContents);
             }
         }
 
         @Override
-        public void characters(char[] ch, int start, int length) {
-            lastContents += new String(ch, start, length);
+        public void cell(String cellReference, String formattedValue, XSSFComment comment) {
+            // gracefully handle missing CellRef here in a similar way as XSSFCell does
+            if (cellReference == null) {
+                cellReference = new CellAddress(currentRow, currentCol).formatAsString();
+            }
+
+            // Did we miss any cells?
+            currentCol = (new CellReference(cellReference)).getCol();
+            String labelX = CellReference.convertNumToColString(currentCol);
+            rowData.add(formattedValue);
+            if (Config.cellHandlerSkipRowData) {
+                getCellHandlers().forEach(cellHandler -> {
+                    String labelY = String.valueOf(currentCol + 1);
+                    cellHandler.read(labelX, labelY, currentRow, currentCol, rowData, formattedValue);
+                });
+            }
+            //            System.out.println(formattedValue);
+        }
+
+        @Override
+        public void headerFooter(String text, boolean isHeader, String tagName) {
+
+        }
+
+        @Override
+        public void endSheet() {
+
         }
     }
 }

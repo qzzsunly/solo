@@ -8,5 +8,9 @@ import java.io.InputStream;
  * @author qzz
  */
 public interface Reader {
-    void read(InputStream in, Model model) throws ParseException;
+    /**
+     * @param in
+     * @throws ParseException
+     */
+    void read(InputStream in) throws ParseException;
 }

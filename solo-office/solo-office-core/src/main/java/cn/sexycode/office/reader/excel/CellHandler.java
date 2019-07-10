@@ -1,6 +1,5 @@
 package cn.sexycode.office.reader.excel;
 
-import cn.sexycode.office.reader.Model;
 import cn.sexycode.util.core.lang.Order;
 
 import java.util.List;
@@ -14,9 +13,10 @@ public interface CellHandler extends Order {
     /**
      * @param labelX  横坐标
      * @param labelY  竖坐标
-     * @param rowData 行数据
+     * @param rowNum
+     * @param colNum
+     * @param rowData 行数据 不要修改list的长度，内部有遍历
      * @param data    原始数据
-     * @param model   封装的模型数据
      */
-    void read(String labelX, String labelY, List<Object> rowData, Object data, Model model);
+    void read(String labelX, String labelY, int rowNum, int colNum, List<Object> rowData, Object data);
 }

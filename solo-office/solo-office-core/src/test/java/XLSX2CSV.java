@@ -205,6 +205,9 @@ public class XLSX2CSV {
     }
 
     public static void main(String[] args) throws Exception {
+        args = new String[2];
+        args[0] = "e:/x5/业务追踪表1557384063836.xlsx";
+        args[1] = "3";
         if (args.length < 1) {
             System.err.println("Use:");
             System.err.println("  XLSX2CSV <xlsx file> [min columns]");
