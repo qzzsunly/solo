@@ -9,11 +9,11 @@ import java.util.List;
  *
  * @author qzz
  */
-public interface RowHandler extends Order {
+public interface RowHandler<T> extends Order {
     /**
      * @param labelX  横坐标
      * @param rowNum
      * @param rowData 行数据
      */
-    void read(String labelX, int rowNum, List<Object> rowData);
+    T read(String labelX, int rowNum, List<CellData> rowData);
 }

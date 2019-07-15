@@ -7,10 +7,10 @@ import java.util.List;
  */
 public interface XClass extends XAnnotatedElement {
 
-    public static final String ACCESS_PROPERTY = "property";
-    public static final String ACCESS_FIELD = "field";
+    String ACCESS_PROPERTY = "property";
+    String ACCESS_FIELD = "field";
 
-    static final Filter DEFAULT_FILTER = new Filter() {
+    Filter DEFAULT_FILTER = new Filter() {
 
         public boolean returnStatic() {
             return false;

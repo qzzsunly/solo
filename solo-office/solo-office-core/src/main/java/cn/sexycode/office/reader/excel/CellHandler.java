@@ -9,14 +9,10 @@ import java.util.List;
  *
  * @author qzz
  */
-public interface CellHandler extends Order {
+public interface CellHandler<T> extends Order {
     /**
-     * @param labelX  横坐标
-     * @param labelY  竖坐标
-     * @param rowNum
-     * @param colNum
      * @param rowData 行数据 不要修改list的长度，内部有遍历
      * @param data    原始数据
      */
-    void read(String labelX, String labelY, int rowNum, int colNum, List<Object> rowData, Object data);
+    T read(List<CellData> rowData, CellData data);
 }

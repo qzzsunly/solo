@@ -1,12 +1,17 @@
 import org.apache.poi.ooxml.util.SAXHelper;
 import org.apache.poi.openxml4j.exceptions.OpenXML4JException;
+import org.apache.poi.openxml4j.opc.OPCPackage;
+import org.apache.poi.openxml4j.opc.PackageAccess;
+import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.xssf.eventusermodel.ReadOnlySharedStringsTable;
+import org.apache.poi.xssf.eventusermodel.XSSFReader;
 import org.apache.poi.xssf.eventusermodel.XSSFSheetXMLHandler;
 import org.apache.poi.xssf.eventusermodel.XSSFSheetXMLHandler.SheetContentsHandler;
 import org.apache.poi.xssf.usermodel.XSSFComment;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTSheet;
+import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -26,9 +31,8 @@ public class HybridStreaming {
     private static final String SHEET_TO_STREAM = "large sheet";
 
     public static void main(String[] args)
-            throws IOException, SAXException, OpenXML4JException, ParserConfigurationException {
-        XMLReader sheetParser = SAXHelper.newXMLReader();
-        try (InputStream sourceBytes = new FileInputStream("e:/x5/业务追踪表1557384063836.xlsx")) {
+            throws IOException, SAXException, ParserConfigurationException, OpenXML4JException {
+        try (InputStream sourceBytes = new FileInputStream("/Users/qzz/业务追踪表1557385217666.xlsx")) {
             XSSFWorkbook workbook = new XSSFWorkbook(sourceBytes) {
                 /**
                  * Avoid DOM parse of large sheet
@@ -37,27 +41,33 @@ public class HybridStreaming {
                 public void parseSheet(java.util.Map<String, XSSFSheet> shIdMap, CTSheet ctSheet) {
                     if (!SHEET_TO_STREAM.equals(ctSheet.getName())) {
                         super.parseSheet(shIdMap, ctSheet);
-                    } else {
-                        InputStream stream = ctSheet.newInputStream();
-                        InputSource sheetSource = new InputSource(stream);
-                        try {
-                            // Having avoided a DOM-based parse of the sheet, we can stream it instead.
-
-                            ReadOnlySharedStringsTable strings = new ReadOnlySharedStringsTable(getPackage());
-                            XSSFSheetXMLHandler xssfSheetXMLHandler = new XSSFSheetXMLHandler(getStylesSource(),
-                                    strings, createSheetContentsHandler(), false);
-                            sheetParser.setContentHandler(xssfSheetXMLHandler);
-                            sheetParser.parse(sheetSource);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        } catch (SAXException e) {
-                            e.printStackTrace();
-                        }
                     }
                 }
             };
+            OPCPackage p = OPCPackage.open("/Users/qzz/业务追踪表1557385217666.xlsx", PackageAccess.READ);
+            // Having avoided a DOM-based parse of the sheet, we can stream it instead.
+            ReadOnlySharedStringsTable strings = new ReadOnlySharedStringsTable(p);
 
-            //            workbook.close();
+            XSSFReader xssfReader = new XSSFReader(p);
+            XSSFReader.SheetIterator iter = (XSSFReader.SheetIterator) xssfReader.getSheetsData();
+            int index = 0;
+            while (iter.hasNext()) {
+                try (InputStream stream = iter.next()) {
+                    String sheetName = iter.getSheetName();
+                    //                    this.output.println();
+                    System.out.println(sheetName + " [index=" + index + "]:");
+                    DataFormatter formatter = new DataFormatter();
+                    InputSource sheetSource = new InputSource(stream);
+                    XMLReader sheetParser = SAXHelper.newXMLReader();
+                    ContentHandler handler = new XSSFSheetXMLHandler(workbook.getStylesSource(), strings,
+                            createSheetContentsHandler(), false);
+                    sheetParser.setContentHandler(handler);
+                    sheetParser.parse(sheetSource);
+                }
+                ++index;
+            }
+
+            workbook.close();
         }
     }
 
@@ -66,7 +76,7 @@ public class HybridStreaming {
 
             @Override
             public void startRow(int rowNum) {
-                System.out.println("111111: row: " + rowNum);
+                System.out.println("row: " + rowNum);
             }
 
             @Override
