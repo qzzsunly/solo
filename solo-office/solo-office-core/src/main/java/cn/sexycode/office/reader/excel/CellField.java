@@ -14,9 +14,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CellField {
     /**
-     * 横坐标
-     *
-     * @return 横坐标
+     * @return 纵坐标
      */
-    String labelX();
+    String labelCol();
 }

@@ -11,19 +11,21 @@ import java.util.regex.Pattern;
 
 /**
  * Utility class for various reflection operations.
- *
  */
 public final class ReflectHelper {
 
-    private static final Pattern JAVA_CONSTANT_PATTERN = Pattern.compile(
-            "[a-z\\d]+\\.([A-Z]{1}[a-z\\d]+)+\\$?([A-Z]{1}[a-z\\d]+)*\\.[A-Z_\\$]+", Pattern.UNICODE_CHARACTER_CLASS);
+    private static final Pattern JAVA_CONSTANT_PATTERN = Pattern
+            .compile("[a-z\\d]+\\.([A-Z]{1}[a-z\\d]+)+\\$?([A-Z]{1}[a-z\\d]+)*\\.[A-Z_\\$]+",
+                    Pattern.UNICODE_CHARACTER_CLASS);
 
     public static final Class[] NO_PARAM_SIGNATURE = new Class[0];
+
     public static final Object[] NO_PARAMS = new Object[0];
 
-    public static final Class[] SINGLE_OBJECT_PARAM_SIGNATURE = new Class[]{Object.class};
+    public static final Class[] SINGLE_OBJECT_PARAM_SIGNATURE = new Class[] { Object.class };
 
     private static final Method OBJECT_EQUALS;
+
     private static final Method OBJECT_HASHCODE;
 
     static {
@@ -142,8 +144,6 @@ public final class ReflectHelper {
      * @param name The class name
      * @return The class reference.
      * @throws ClassNotFoundException From {@link Class#forName(String)}.
-     * @deprecated Depending on context, either {@link org.hibernate.boot.registry.classloading.spi.ClassLoaderService}
-     * or {@link org.hibernate.boot.spi.ClassLoaderAccess} should be preferred
      */
     @Deprecated
     public static Class classForName(String name) throws ClassNotFoundException {
@@ -168,7 +168,6 @@ public final class ReflectHelper {
         return Modifier.isPublic(member.getModifiers()) && Modifier.isPublic(clazz.getModifiers());
     }
 
-
     /**
      * Retrieve the default (no arg) constructor from the given class.
      *
@@ -187,8 +186,7 @@ public final class ReflectHelper {
             return constructor;
         } catch (NoSuchMethodException nme) {
             throw new PropertyNotFoundException(
-                    "Object class [" + clazz.getName() + "] must declare a default (no-argument) constructor"
-            );
+                    "Object class [" + clazz.getName() + "] must declare a default (no-argument) constructor");
         }
     }
 
@@ -213,7 +211,6 @@ public final class ReflectHelper {
         return Modifier.isFinal(clazz.getModifiers());
     }
 
-
     public static Method getMethod(Class clazz, Method method) {
         try {
             return clazz.getMethod(method.getName(), method.getParameterTypes());
@@ -226,20 +223,16 @@ public final class ReflectHelper {
         if (containerClass == null) {
             throw new IllegalArgumentException("Class on which to find field [" + propertyName + "] cannot be null");
         } else if (containerClass == Object.class) {
-            throw new IllegalArgumentException("Illegal attempt to locate field [" + propertyName + "] on Object.class");
+            throw new IllegalArgumentException(
+                    "Illegal attempt to locate field [" + propertyName + "] on Object.class");
         }
 
         Field field = locateField(containerClass, propertyName);
 
         if (field == null) {
             throw new PropertyNotFoundException(
-                    String.format(
-                            Locale.ROOT,
-                            "Could not locate field name [%s] on class [%s]",
-                            propertyName,
-                            containerClass.getName()
-                    )
-            );
+                    String.format(Locale.ROOT, "Could not locate field name [%s] on class [%s]", propertyName,
+                            containerClass.getName()));
         }
 
         field.setAccessible(true);
@@ -279,13 +272,8 @@ public final class ReflectHelper {
 
         if (getter == null) {
             throw new PropertyNotFoundException(
-                    String.format(
-                            Locale.ROOT,
-                            "Could not locate getter method for property [%s#%s]",
-                            containerClass.getName(),
-                            propertyName
-                    )
-            );
+                    String.format(Locale.ROOT, "Could not locate getter method for property [%s#%s]",
+                            containerClass.getName(), propertyName));
         }
 
         getter.setAccessible(true);
@@ -344,10 +332,7 @@ public final class ReflectHelper {
         return null;
     }
 
-    private static void verifyNoIsVariantExists(
-            Class containerClass,
-            String propertyName,
-            Method getMethod,
+    private static void verifyNoIsVariantExists(Class containerClass, String propertyName, Method getMethod,
             String stemName) {
         // verify that the Class does not also define a method with the same stem name with 'is'
         try {
@@ -359,32 +344,19 @@ public final class ReflectHelper {
         }
     }
 
-    private static void checkGetAndIsVariants(
-            Class containerClass,
-            String propertyName,
-            Method getMethod,
+    private static void checkGetAndIsVariants(Class containerClass, String propertyName, Method getMethod,
             Method isMethod) {
         // Check the return types.  If they are the same, its ok.  If they are different
         // we are in a situation where we could not reasonably know which to use.
         if (!isMethod.getReturnType().equals(getMethod.getReturnType())) {
-            throw new ReflectException(
-                    String.format(
-                            Locale.ROOT,
-                            "In trying to locate getter for property [%s], Class [%s] defined " +
-                                    "both a `get` [%s] and `is` [%s] variant",
-                            propertyName,
-                            containerClass.getName(),
-                            getMethod.toString(),
-                            isMethod.toString()
-                    )
-            );
+            throw new ReflectException(String.format(Locale.ROOT,
+                    "In trying to locate getter for property [%s], Class [%s] defined "
+                            + "both a `get` [%s] and `is` [%s] variant", propertyName, containerClass.getName(),
+                    getMethod.toString(), isMethod.toString()));
         }
     }
 
-    private static void verifyNoGetVariantExists(
-            Class containerClass,
-            String propertyName,
-            Method isMethod,
+    private static void verifyNoGetVariantExists(Class containerClass, String propertyName, Method isMethod,
             String stemName) {
         // verify that the Class does not also define a method with the same stem name with 'is'
         try {
@@ -413,23 +385,18 @@ public final class ReflectHelper {
         // if no setter found yet, check all implemented interfaces
         if (setter == null) {
             setter = setterOrNull(containerClass.getInterfaces(), propertyName, propertyType);
-//			for ( Class theInterface : containerClass.getInterfaces() ) {
-//				setter = setterOrNull( theInterface, propertyName, propertyType );
-//				if ( setter != null ) {
-//					break;
-//				}
-//			}
+            //			for ( Class theInterface : containerClass.getInterfaces() ) {
+            //				setter = setterOrNull( theInterface, propertyName, propertyType );
+            //				if ( setter != null ) {
+            //					break;
+            //				}
+            //			}
         }
 
         if (setter == null) {
             throw new PropertyNotFoundException(
-                    String.format(
-                            Locale.ROOT,
-                            "Could not locate setter method for property [%s#%s]",
-                            containerClass.getName(),
-                            propertyName
-                    )
-            );
+                    String.format(Locale.ROOT, "Could not locate setter method for property [%s#%s]",
+                            containerClass.getName(), propertyName));
         }
 
         setter.setAccessible(true);
@@ -467,5 +434,19 @@ public final class ReflectHelper {
         }
 
         return potentialSetter;
+    }
+
+    public static Class getParameterizedType(Class clazz) {
+        while (clazz != Object.class) {
+            Type t = clazz.getGenericSuperclass();
+            if (t instanceof ParameterizedType) {
+                Type[] args = ((ParameterizedType) t).getActualTypeArguments();
+                if (args[0] instanceof Class) {
+                    return (Class) args[0];
+                }
+            }
+            clazz = clazz.getSuperclass();
+        }
+        return null;
     }
 }

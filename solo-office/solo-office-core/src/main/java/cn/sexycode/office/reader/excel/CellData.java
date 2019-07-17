@@ -2,10 +2,13 @@ package cn.sexycode.office.reader.excel;
 
 import org.apache.poi.ss.util.CellReference;
 
+/**
+ * @author qinzaizhen
+ */
 public class CellData {
-    private String labelY;
+    private String labelCol;
 
-    private String labelX;
+    private String labelRow;
 
     private Object data;
 
@@ -13,20 +16,20 @@ public class CellData {
 
     private int colNum;
 
-    public CellData(String labelX, String labelY, Object data) {
-        this.labelY = labelY;
-        this.labelX = labelX;
-        this.rowNum = Integer.valueOf(labelY) - 1;
-        this.colNum = CellReference.convertColStringToIndex(labelY);
+    public CellData(String labelRow, String labelCol, Object data) {
+        this.labelCol = labelCol;
+        this.labelRow = labelRow;
+        this.rowNum = Integer.valueOf(labelRow) - 1;
+        this.colNum = CellReference.convertColStringToIndex(labelCol);
         this.data = data;
     }
 
-    public String getLabelY() {
-        return labelY;
+    public String getLabelCol() {
+        return labelCol;
     }
 
-    public String getLabelX() {
-        return labelX;
+    public String getLabelRow() {
+        return labelRow;
     }
 
     public Object getData() {
@@ -39,5 +42,11 @@ public class CellData {
 
     public int getColNum() {
         return colNum;
+    }
+
+    @Override
+    public String toString() {
+        return "CellData{" + "labelCol='" + labelCol + '\'' + ", labelRow='" + labelRow + '\'' + ", data=" + data
+                + ", rowNum=" + rowNum + ", colNum=" + colNum + '}';
     }
 }

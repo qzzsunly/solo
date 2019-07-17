@@ -82,7 +82,6 @@ public class DefaultExcelReader implements ExcelReader {
                 InputSource sheetSource = new InputSource(sheet);
                 parser.parse(sheetSource);
                 sheet.close();
-                System.out.println("");
             }
         } catch (Exception e) {
 
@@ -109,8 +108,8 @@ public class DefaultExcelReader implements ExcelReader {
         @Override
         public void endRow(int rowNum) {
             //            System.out.println("endRow: " + rowNum);
+            getRowHandlers().forEach(rowHandler -> rowHandler.read(String.valueOf(rowNum + 1), rowNum, rowData));
             if (!Config.cellHandlerSkipRowData) {
-                getRowHandlers().forEach(rowHandler -> rowHandler.read(String.valueOf(rowNum + 1), rowNum, rowData));
                 for (int i = 0; i < rowData.size(); i++) {
                     CellData data = rowData.get(i);
                     getCellHandlers().forEach(cellHandler -> cellHandler.read(rowData, data));
@@ -128,9 +127,9 @@ public class DefaultExcelReader implements ExcelReader {
 
             // Did we miss any cells?
             currentCol = (new CellReference(cellReference)).getCol();
-            String labelX = CellReference.convertNumToColString(currentCol);
-            String labelY = String.valueOf(currentCol + 1);
-            CellData data = new CellData(labelX, labelY, formattedValue);
+            String labelCol = CellReference.convertNumToColString(currentCol);
+            String labelRow = String.valueOf(currentRow + 1);
+            CellData data = new CellData(labelRow, labelCol, formattedValue);
             rowData.add(data);
             if (Config.cellHandlerSkipRowData) {
                 getCellHandlers().forEach(cellHandler -> cellHandler.read(rowData, data));

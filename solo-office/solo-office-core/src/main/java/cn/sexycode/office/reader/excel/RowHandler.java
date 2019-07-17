@@ -11,9 +11,9 @@ import java.util.List;
  */
 public interface RowHandler<T> extends Order {
     /**
-     * @param labelX  横坐标
+     * @param labelRow  横坐标
      * @param rowNum
      * @param rowData 行数据
      */
-    T read(String labelX, int rowNum, List<CellData> rowData);
+    T read(String labelRow, int rowNum, List<CellData> rowData);
 }
