@@ -435,18 +435,4 @@ public final class ReflectHelper {
 
         return potentialSetter;
     }
-
-    public static Class getParameterizedType(Class clazz) {
-        while (clazz != Object.class) {
-            Type t = clazz.getGenericSuperclass();
-            if (t instanceof ParameterizedType) {
-                Type[] args = ((ParameterizedType) t).getActualTypeArguments();
-                if (args[0] instanceof Class) {
-                    return (Class) args[0];
-                }
-            }
-            clazz = clazz.getSuperclass();
-        }
-        return null;
-    }
 }

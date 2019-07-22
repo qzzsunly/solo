@@ -16,7 +16,9 @@ public class CellData {
 
     private int colNum;
 
-    public CellData(String labelRow, String labelCol, Object data) {
+    private int sheetIndex;
+
+    public CellData(int sheetIndex, String labelRow, String labelCol, Object data) {
         this.labelCol = labelCol;
         this.labelRow = labelRow;
         this.rowNum = Integer.valueOf(labelRow) - 1;
@@ -48,5 +50,9 @@ public class CellData {
     public String toString() {
         return "CellData{" + "labelCol='" + labelCol + '\'' + ", labelRow='" + labelRow + '\'' + ", data=" + data
                 + ", rowNum=" + rowNum + ", colNum=" + colNum + '}';
+    }
+
+    public int getSheetIndex() {
+        return sheetIndex;
     }
 }

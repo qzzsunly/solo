@@ -77,21 +77,21 @@ public class DefaultExcelReader implements ExcelReader {
             parser.setContentHandler(handler);
             Iterator<InputStream> sheets = r.getSheetsData();
             while (sheets.hasNext()) {
-                System.out.println("Processing new sheet:\n");
                 InputStream sheet = sheets.next();
                 InputSource sheetSource = new InputSource(sheet);
                 parser.parse(sheetSource);
                 sheet.close();
             }
         } catch (Exception e) {
-
             LOGGER.error("异常", e);
-            throw new ParseException(e.getMessage());
+            throw new ParseException(e.getMessage(), e);
         }
     }
 
     private class InnerSheetHandler implements XSSFSheetXMLHandler.SheetContentsHandler {
         private List<CellData> rowData;
+
+        private int sheetIndex = 0;
 
         private int currentRow = -1;
 
@@ -114,7 +114,6 @@ public class DefaultExcelReader implements ExcelReader {
                     CellData data = rowData.get(i);
                     getCellHandlers().forEach(cellHandler -> cellHandler.read(rowData, data));
                 }
-
             }
         }
 
@@ -129,7 +128,7 @@ public class DefaultExcelReader implements ExcelReader {
             currentCol = (new CellReference(cellReference)).getCol();
             String labelCol = CellReference.convertNumToColString(currentCol);
             String labelRow = String.valueOf(currentRow + 1);
-            CellData data = new CellData(labelRow, labelCol, formattedValue);
+            CellData data = new CellData(sheetIndex, labelRow, labelCol, formattedValue);
             rowData.add(data);
             if (Config.cellHandlerSkipRowData) {
                 getCellHandlers().forEach(cellHandler -> cellHandler.read(rowData, data));
@@ -139,12 +138,15 @@ public class DefaultExcelReader implements ExcelReader {
 
         @Override
         public void headerFooter(String text, boolean isHeader, String tagName) {
-
+            System.out.println(text);
         }
 
         @Override
         public void endSheet() {
-
+            for (SheetHandler sheetHandler : getSheetHandlers()) {
+                sheetHandler.read(sheetIndex++, "");
+            }
+            System.out.println("end sheet");
         }
     }
 }

@@ -8,6 +8,8 @@ import org.junit.runners.JUnit4;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RunWith(JUnit4.class)
 public class ExcelReaderTest {
@@ -29,12 +31,21 @@ public class ExcelReaderTest {
     public static class Model {
         @CellField(labelCol = "A")
         private String name;
-    }
-    @Test
-    public void extractor() throws IOException {
 
-        DefaultExcelReader defaultExcelReader = new DefaultExcelReader();
-        defaultExcelReader.addRowHandler(new SimpleExtractor<Model>());
-        defaultExcelReader.read(Files.newInputStream(Paths.get("e:/x5/业务追踪表1557384063836.xlsx")));
+        @Override
+        public String toString() {
+            return "Model{" + "name='" + name + '\'' + '}';
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+    }
+
+    @Test
+    public void extractor() {
+
+        List<Model> collect = new SimpleExtractor<Model>() {
+        }.getData("e:/x5/业务追踪表1557384063836.xlsx").stream().peek(System.out::println).collect(Collectors.toList());
     }
 }
