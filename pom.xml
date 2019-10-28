@@ -23,7 +23,6 @@
 
     <modules>
         <module>solo-util-core</module>
-        <module>solo-office</module>
     </modules>
     <dependencyManagement>
         <dependencies>
