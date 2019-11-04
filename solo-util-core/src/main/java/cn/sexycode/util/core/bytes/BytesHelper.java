@@ -1,6 +1,6 @@
 package cn.sexycode.util.core.bytes;
 
-import cn.sexycode.util.core.str.StringHelper;
+import cn.sexycode.util.core.str.StringUtils;
 
 public final class BytesHelper {
 
@@ -102,14 +102,14 @@ public final class BytesHelper {
 
     public static String toBinaryString(int value) {
         String formatted = Long.toBinaryString(value);
-        StringBuilder buf = new StringBuilder(StringHelper.repeat('0', 32));
+        StringBuilder buf = new StringBuilder(StringUtils.repeat('0', 32));
         buf.replace(64 - formatted.length(), 64, formatted);
         return buf.toString();
     }
 
     public static String toBinaryString(long value) {
         String formatted = Long.toBinaryString(value);
-        StringBuilder buf = new StringBuilder(StringHelper.repeat('0', 64));
+        StringBuilder buf = new StringBuilder(StringUtils.repeat('0', 64));
         buf.replace(64 - formatted.length(), 64, formatted);
         return buf.toString();
     }
