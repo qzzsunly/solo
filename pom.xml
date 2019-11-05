@@ -9,12 +9,12 @@
         <artifactId>sexycode-parent</artifactId>
         <version>1.2</version>
     </parent>
-    <artifactId>solo-util</artifactId>
+    <artifactId>solo</artifactId>
     <version>1.3-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>solo-util</name>
-    <url>http://solo-util.sexycode.cn</url>
-    <description>solo util</description>
+    <name>solo</name>
+    <url>http://solo.sexycode.cn</url>
+    <description>solo util root</description>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -22,7 +22,7 @@
     </properties>
 
     <modules>
-        <module>solo-util-core</module>
+        <module>solo-core</module>
     </modules>
     <dependencyManagement>
         <dependencies>
