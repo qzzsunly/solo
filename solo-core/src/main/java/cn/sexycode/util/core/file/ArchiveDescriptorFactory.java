@@ -46,16 +46,4 @@ public interface ArchiveDescriptorFactory {
 	 */
 	public URL getJarURLFromURLEntry(URL url, String entry) throws IllegalArgumentException;
 
-	/**
-	 * Not used!
-	 *
-	 * @param jarPath The jar path
-	 *
-	 * @return The url from the path?
-	 *
-	 * @deprecated Not used!
-	 */
-	@Deprecated
-	@SuppressWarnings("UnusedDeclaration")
-	public URL getURLFromPath(String jarPath);
 }

@@ -11,8 +11,9 @@ import java.util.Map;
  * @author Steve Ebersole
  */
 public abstract class AbstractScannerImpl implements Scanner {
-	private final ArchiveDescriptorFactory archiveDescriptorFactory;
-	private final Map<URL, ArchiveDescriptorInfo> archiveDescriptorCache = new HashMap<URL, ArchiveDescriptorInfo>();
+    protected final ArchiveDescriptorFactory archiveDescriptorFactory;
+
+    protected final Map<URL, ArchiveDescriptorInfo> archiveDescriptorCache = new HashMap<URL, ArchiveDescriptorInfo>();
 
 	protected AbstractScannerImpl(ArchiveDescriptorFactory archiveDescriptorFactory) {
 		this.archiveDescriptorFactory = archiveDescriptorFactory;

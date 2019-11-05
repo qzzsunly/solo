@@ -3,9 +3,6 @@ package cn.sexycode.util.core.file.scan;
 import cn.sexycode.util.core.file.ArchiveContext;
 import cn.sexycode.util.core.file.ArchiveEntry;
 import cn.sexycode.util.core.file.ArchiveEntryHandler;
-import cn.sexycode.util.core.file.ArchiveException;
-
-import java.io.IOException;
 
 /**
  * Defines handling and filtering for class file entries within an archive
@@ -13,7 +10,7 @@ import java.io.IOException;
  * @author Steve Ebersole
  */
 public class ClassFileArchiveEntryHandler implements ArchiveEntryHandler {
-	private final ScanResultCollector resultCollector;
+	protected final ScanResultCollector resultCollector;
 
 	public ClassFileArchiveEntryHandler(ScanResultCollector resultCollector) {
 		this.resultCollector = resultCollector;
