@@ -3,6 +3,9 @@ package cn.sexycode.util.core.factory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @author qinzaizhen
+ */
 public class BeanFactoryUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(BeanFactoryUtil.class);
 
