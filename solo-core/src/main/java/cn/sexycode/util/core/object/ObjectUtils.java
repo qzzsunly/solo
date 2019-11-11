@@ -1,6 +1,8 @@
 package cn.sexycode.util.core.object;
 
 import cn.sexycode.util.core.lang.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
@@ -27,6 +29,7 @@ import java.util.Optional;
  * @since 19.03.2004
  */
 public abstract class ObjectUtils {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ObjectUtils.class);
 
     private static final int INITIAL_HASH = 7;
 
@@ -984,6 +987,25 @@ public abstract class ObjectUtils {
         }
         sb.append(ARRAY_END);
         return sb.toString();
+    }
+
+    private static boolean cglibPresent = false;
+
+    static {
+        try {
+            Class.forName("net.sf.cglib.beans.BeanCopier");
+            cglibPresent = true;
+        } catch (ClassNotFoundException e) {
+            LOGGER.debug("未依赖cglib", e);
+        }
+    }
+
+    public static void copyProperties(Object source, Object target) {
+        if (cglibPresent) {
+            CachedBeanCopier.copy(source, target);
+        } else {
+            throw new IllegalStateException("未加载cglib或asm等工具包");
+        }
     }
 
 }
