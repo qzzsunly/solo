@@ -50,6 +50,13 @@ public final class ReflectHelper {
     private ReflectHelper() {
     }
 
+    public static void ensureAccessibility(AccessibleObject accessibleObject) {
+        if ( accessibleObject.isAccessible() ) {
+            return;
+        }
+
+        accessibleObject.setAccessible( true );
+    }
     /**
      * Encapsulation of getting hold of a class's {@link Object#equals equals}  method.
      *
