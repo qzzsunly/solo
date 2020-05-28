@@ -15,6 +15,18 @@ public class BeanFactoryUtil {
             LOGGER.error("请通过set方法初始化BeanFactory");
             throw new UnsupportedOperationException();
         }
+
+        @Override
+        public <T> T getBean(String beanName) {
+            LOGGER.error("请通过set方法初始化BeanFactory");
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public <T> T getBean(String beanName, Class<T> clazz) {
+            LOGGER.error("请通过set方法初始化BeanFactory");
+            throw new UnsupportedOperationException();
+        }
     };
 
     public static BeanFactory getBeanFactory() {
