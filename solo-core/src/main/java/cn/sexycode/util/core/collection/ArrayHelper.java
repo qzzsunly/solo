@@ -5,6 +5,8 @@ import cn.sexycode.util.core.exception.SerializationException;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.*;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 /**
  * @author qinzaizhen
@@ -321,6 +323,33 @@ public final class ArrayHelper {
             if (!o1[index].equals(o2[index])) {
                 return false;
             }
+        }
+        return true;
+    }
+
+    /**
+     * Compare 2 arrays only at the first level
+     *
+     */
+    public static <T,R> boolean isEquals(T[] o1, R[] o2, BiFunction<T, R, Boolean> comparator) {
+        if (o1 == o2) {
+            return true;
+        }
+        if (o1 == null || o2 == null) {
+            return false;
+        }
+        int length = o1.length;
+        if (length != o2.length) {
+            return false;
+        }
+        if (comparator != null) {
+            for (int index = 0; index < length; index++) {
+                if (!comparator.apply(o1[index], o2[index])) {
+                    return false;
+                }
+            }
+        }else{
+            return Arrays.equals(o1,o2);
         }
         return true;
     }

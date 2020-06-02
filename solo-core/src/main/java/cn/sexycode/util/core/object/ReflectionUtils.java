@@ -1,5 +1,8 @@
 package cn.sexycode.util.core.object;
 
+import cn.sexycode.util.core.cls.ClassUtils;
+import cn.sexycode.util.core.collection.ArrayHelper;
+import cn.sexycode.util.core.collection.CollectionUtils;
 import cn.sexycode.util.core.collection.ConcurrentReferenceHashMap;
 import cn.sexycode.util.core.lang.Assert;
 
@@ -15,6 +18,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 /**
  * Simple utility class for working with the reflection API and handling
@@ -166,7 +170,7 @@ public abstract class ReflectionUtils {
 			Method[] methods = (searchType.isInterface() ? searchType.getMethods() : getDeclaredMethods(searchType));
 			for (Method method : methods) {
 				if (name.equals(method.getName()) &&
-						(paramTypes == null || Arrays.equals(paramTypes, method.getParameterTypes()))) {
+						(paramTypes == null || ArrayHelper.isEquals(method.getParameterTypes(), paramTypes, ClassUtils::isAssignable))) {
 					return method;
 				}
 			}
