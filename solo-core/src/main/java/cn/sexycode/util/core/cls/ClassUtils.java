@@ -2,7 +2,7 @@ package cn.sexycode.util.core.cls;
 
 import cn.sexycode.util.core.collection.CollectionUtils;
 import cn.sexycode.util.core.lang.Assert;
-import cn.sexycode.util.core.object.ReflectHelper;
+import cn.sexycode.util.core.object.ReflectionUtils;
 
 import java.beans.Introspector;
 import java.io.Closeable;
@@ -1280,7 +1280,7 @@ public abstract class ClassUtils {
                         return method;
                     }
                 } else {
-                    Method specificMethod = ReflectHelper
+                    Method specificMethod = ReflectionUtils
                             .findMethod(targetClass, method.getName(), method.getParameterTypes());
                     return (specificMethod != null ? specificMethod : method);
                 }
