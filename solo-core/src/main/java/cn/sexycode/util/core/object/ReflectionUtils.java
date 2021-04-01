@@ -129,6 +129,13 @@ public abstract class ReflectionUtils {
 	 */
 	public static void setField(Field field, Object target, Object value) {
 		try {
+			Field modifiersField = findField(Field.class, "modifiers");
+			//Field 的 modifiers 是私有的
+			modifiersField.setAccessible(true);
+			modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+			if(!field.isAccessible()) {
+				field.setAccessible(true);
+			}
 			field.set(target, value);
 		}
 		catch (IllegalAccessException ex) {
@@ -136,6 +143,20 @@ public abstract class ReflectionUtils {
 			throw new IllegalStateException(
 					"Unexpected reflection exception - " + ex.getClass().getName() + ": " + ex.getMessage());
 		}
+	}
+
+	/**
+	 * Set the field represented by the supplied {@link Field field object} on the
+	 * specified {@link Object target object} to the specified {@code value}.
+	 * In accordance with {@link Field#set(Object, Object)} semantics, the new value
+	 * is automatically unwrapped if the underlying field has a primitive type.
+	 * <p>Thrown exceptions are handled via a call to {@link #handleReflectionException(Exception)}.
+	 * @param fieldName the field to set
+	 * @param target the target object on which to set the field
+	 * @param value the value to set (may be {@code null})
+	 */
+	public static void setField(String fieldName, Object target, Object value) {
+		setField(findField(target.getClass(), fieldName), target, value);
 	}
 
 	/**
@@ -425,7 +446,6 @@ public abstract class ReflectionUtils {
 	 * Determine whether the given method is a CGLIB 'renamed' method,
 	 * following the pattern "CGLIB$methodName$0".
 	 * @param renamedMethod the method to check
-	 * @see org.springframework.cglib.proxy.Enhancer#rename
 	 */
 	public static boolean isCglibRenamedMethod(Method renamedMethod) {
 		String name = renamedMethod.getName();
