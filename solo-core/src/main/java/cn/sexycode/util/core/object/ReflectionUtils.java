@@ -129,19 +129,24 @@ public abstract class ReflectionUtils {
 	 */
 	public static void setField(Field field, Object target, Object value) {
 		try {
-			Field modifiersField = findField(Field.class, "modifiers");
-			//Field 的 modifiers 是私有的
-			modifiersField.setAccessible(true);
-			modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-			if(!field.isAccessible()) {
-				field.setAccessible(true);
-			}
+
+			getAccess(field);
 			field.set(target, value);
 		}
 		catch (IllegalAccessException ex) {
 			handleReflectionException(ex);
 			throw new IllegalStateException(
 					"Unexpected reflection exception - " + ex.getClass().getName() + ": " + ex.getMessage());
+		}
+	}
+
+	private static void getAccess(Field field) throws IllegalAccessException {
+		//Field 的 modifiers 是私有的
+		Field modifiersField = findField(Field.class, "modifiers");
+		modifiersField.setAccessible(true);
+		modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL & ~Modifier.STATIC);
+		if(!field.isAccessible()) {
+			field.setAccessible(true);
 		}
 	}
 
@@ -171,6 +176,7 @@ public abstract class ReflectionUtils {
 	 */
 	public static Object getField(Field field, Object target) {
 		try {
+			getAccess(field);
 			return field.get(target);
 		}
 		catch (IllegalAccessException ex) {
